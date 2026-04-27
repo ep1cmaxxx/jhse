@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>CS2 Quiz - Игрок</title>
+    <style>
+        body { background: #1b1e23; color: white; font-family: sans-serif; text-align: center; }
+        .card { background: #2a2d32; border-bottom: 4px solid #de9b35; padding: 20px; margin: 20px auto; width: 80%; border-radius: 8px; }
+        #score-board { display: flex; justify-content: center; gap: 20px; font-size: 1.2em; color: #de9b35; }
+    </style>
+</head>
+<body>
+    <h1>CS2 QUIZ PARTICIPANT</h1>
+    <div id="score-board">Ожидание подключения...</div>
+    <div class="card">
+        <h2 id="question">Ожидаем начала раунда...</h2>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const name = prompt("Введите ваш никнейм:") || "Аноним";
+        socket.emit('join', name);
+
+        socket.on('updatePlayers', (players) => {
+            const board = document.getElementById('score-board');
+            board.innerHTML = Object.values(players)
+                .map(p => `<div>${p.name}: <strong>${p.score}</strong></div>`).join('');
+        });
+
+        socket.on('nextQuestion', (data) => {
+            document.getElementById('question').innerText = data.question;
+        });
+    </script>
+</body>
+</html>
